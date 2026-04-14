@@ -1,491 +1,226 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Media Share List</title>
-  <style>
-    :root {
-      --bg: #0f1115;
-      --surface: #171a21;
-      --surface-2: #1d222b;
-      --line: #2a303b;
-      --text: #f5f7fb;
-      --muted: #9ca6b8;
-      --accent: #e9edf7;
-      --accent-text: #0e1117;
-      --danger: #ff8c8c;
-      --radius: 20px;
-      --shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
-    }
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Lambda Picks — Studio</title>
+      <style>
 
-    * { box-sizing: border-box; }
+:root{
+  --bg:#0b0d10;--bg-2:#111419;--panel:#14181e;--panel-2:#171c23;--line:rgba(255,255,255,.08);
+  --text:#f3f5f7;--muted:#9aa4b2;--soft:#cfd6e0;--chip:#e9edf3;--chip-text:#10141a;
+  --primary:#eff3f8;--primary-text:#0d1117;--danger:#ff9797;--radius:24px;--shadow:0 18px 46px rgba(0,0,0,.26);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--text);background:radial-gradient(circle at top left,#161b24 0,#0b0d10 48%),linear-gradient(180deg,#090b0e,#0f1318);min-height:100vh}
+.shell{width:min(1180px,calc(100vw - 28px));margin:26px auto 40px;display:grid;grid-template-columns:390px minmax(0,1fr);gap:20px}
+.panel{background:rgba(20,24,30,.92);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);backdrop-filter:blur(8px)}
+.side{position:sticky;top:18px;align-self:start;overflow:hidden}
+.section{padding:22px}
+.hero{padding-bottom:18px;border-bottom:1px solid var(--line)}
+.eyebrow{display:inline-flex;padding:8px 12px;border:1px solid rgba(255,255,255,.1);border-radius:999px;color:var(--muted);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+h1{margin:16px 0 10px;font-size:34px;line-height:1.04;letter-spacing:-.035em}
+.hero-copy,.section-sub,.status,.thumb-name,.count{color:var(--muted)}
+.hero-copy{margin:0;font-size:14px;line-height:1.7}
+.form-grid{display:grid;gap:16px}
+.field label{display:block;margin-bottom:10px;font-size:13px;font-weight:700;letter-spacing:.01em;color:var(--soft)}
+input[type="text"],textarea,select{
+  width:100%;border-radius:18px;border:1px solid rgba(255,255,255,.08);background:#171c23;color:var(--text);
+  padding:14px 15px;font-size:15px;outline:none;transition:.18s ease;border-color .18s ease, box-shadow .18s ease
+}
+textarea{min-height:120px;resize:vertical;line-height:1.65}
+input[type="text"]:focus,textarea:focus,select:focus{border-color:#6f7b8b;box-shadow:0 0 0 4px rgba(255,255,255,.05)}
+.thumb-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.file-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;padding:12px 14px;min-height:46px;border-radius:16px;border:1px dashed #536072;background:#171c23;cursor:pointer}
+.file-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.thumb-preview{width:72px;height:72px;border-radius:16px;display:none;object-fit:cover;border:1px solid rgba(255,255,255,.08)}
+.thumb-name{font-size:13px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{appearance:none;border:none;border-radius:16px;padding:13px 16px;font-size:14px;font-weight:800;cursor:pointer;transition:transform .12s ease,opacity .18s ease}
+.btn:hover{transform:translateY(-1px)}
+.primary{background:var(--primary);color:var(--primary-text)}
+.secondary{background:#252c35;color:var(--text);border:1px solid rgba(255,255,255,.1)}
+.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.12)}
+.stack{display:grid;gap:20px}
+.section-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:18px}
+.section-title{font-size:20px;font-weight:800;letter-spacing:-.02em}
+.draft-list,.share-items{display:grid;gap:14px}
+.draft-item,.share-item{display:grid;grid-template-columns:78px 1fr auto;gap:14px;align-items:start;padding:14px;border-radius:22px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06)}
+.share-item{grid-template-columns:96px 1fr}
+.draft-meta,.share-meta{min-width:0}
+.draft-cover,.share-cover{width:78px;height:78px;border-radius:18px;object-fit:cover;background:#11151b;border:1px solid rgba(255,255,255,.08)}
+.share-cover{width:96px;height:96px;border-radius:22px}
+.draft-noimg,.share-noimg{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:8px}
+.badge{display:inline-flex;padding:6px 10px;border-radius:999px;background:#eff3f8;color:#10141a;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.draft-title,.share-name{margin:10px 0 8px;font-size:20px;line-height:1.2;letter-spacing:-.02em}
+.share-name{font-size:26px}
+.draft-reason,.share-reason{margin:0;color:#c6ceda;line-height:1.65;font-size:14px}
+.share-reason{font-size:15px}
+.remove-btn{appearance:none;border:none;background:transparent;color:#ffb0b0;border:1px solid rgba(255,176,176,.24);border-radius:14px;padding:10px 12px;font-weight:700;cursor:pointer}
+.share-board{display:grid;gap:16px}
+.board-header{padding:10px 4px 6px}
+.board-chip{display:inline-flex;padding:8px 12px;border-radius:999px;background:#eff3f8;color:#10141a;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.board-title{margin:16px 0 10px;font-size:40px;line-height:1.02;letter-spacing:-.04em}
+.board-sub{margin:0;color:var(--muted);font-size:15px;line-height:1.6}
+.board-foot{text-align:right;color:var(--muted);font-size:13px}
+.empty-state{padding:18px;border-radius:18px;background:rgba(255,255,255,.025);border:1px dashed rgba(255,255,255,.1);color:var(--muted);text-align:center}
+.empty-state.large{padding:48px 18px}
+@media (max-width: 960px){.shell{grid-template-columns:1fr}.side{position:static}.actions{grid-template-columns:1fr}.draft-item,.share-item{grid-template-columns:72px 1fr}.remove-btn{grid-column:2 / 3;justify-self:start}}
 
-    body {
-      margin: 0;
-      font-family: Inter, "Segoe UI", Arial, sans-serif;
-      color: var(--text);
-      background: linear-gradient(180deg, #0c0e12 0%, #10141b 100%);
-      min-height: 100vh;
-    }
-
-    .wrap {
-      width: min(1120px, calc(100vw - 28px));
-      margin: 22px auto 36px;
-      display: grid;
-      grid-template-columns: 390px 1fr;
-      gap: 18px;
-    }
-
-    .panel {
-      background: var(--surface);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .left {
-      position: sticky;
-      top: 18px;
-      align-self: start;
-    }
-
-    .section {
-      padding: 20px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .section:last-child { border-bottom: none; }
-
-    h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
-      line-height: 1.12;
-      letter-spacing: -0.02em;
-    }
-
-    .sub {
-      margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.65;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 10px;
-      color: #dbe2f0;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-    }
-
-    input[type="text"], textarea {
-      width: 100%;
-      border: 1px solid #313846;
-      background: var(--surface-2);
-      color: var(--text);
-      border-radius: 16px;
-      padding: 14px 15px;
-      font-size: 15px;
-      outline: none;
-      transition: border-color .18s ease, box-shadow .18s ease;
-      resize: vertical;
-    }
-
-    input[type="text"]:focus, textarea:focus {
-      border-color: #778197;
-      box-shadow: 0 0 0 4px rgba(255,255,255,.06);
-    }
-
-    textarea {
-      min-height: 112px;
-      line-height: 1.6;
-    }
-
-    .thumb-pick {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .file {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 44px;
-      padding: 0 16px;
-      border-radius: 14px;
-      border: 1px dashed #4a5365;
-      background: var(--surface-2);
-      color: var(--text);
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .file input {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-    }
-
-    .thumb-preview {
-      width: 72px;
-      height: 72px;
-      object-fit: cover;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.08);
-      background: #13161d;
-      display: none;
-    }
-
-    .thumb-name {
-      max-width: 200px;
-      color: var(--muted);
-      font-size: 13px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    button {
-      appearance: none;
-      border: none;
-      border-radius: 16px;
-      font-size: 15px;
-      font-weight: 700;
-      padding: 13px 18px;
-      cursor: pointer;
-      transition: transform .12s ease, opacity .18s ease;
-    }
-
-    button:hover { transform: translateY(-1px); }
-    button:active { transform: translateY(0); }
-
-    .primary {
-      background: var(--accent);
-      color: var(--accent-text);
-    }
-
-    .secondary {
-      background: #252b35;
-      color: var(--text);
-      border: 1px solid #39404c;
-    }
-
-    .ghost {
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid #353c49;
-    }
-
-    .tiny {
-      padding: 8px 12px;
-      font-size: 13px;
-      border-radius: 12px;
-    }
-
-    .list-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .count {
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .draft-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .draft-item {
-      display: grid;
-      grid-template-columns: 62px 1fr auto;
-      gap: 12px;
-      align-items: start;
-      padding: 12px;
-      background: var(--surface-2);
-      border: 1px solid rgba(255,255,255,.05);
-      border-radius: 18px;
-    }
-
-    .draft-cover {
-      width: 62px;
-      height: 62px;
-      border-radius: 14px;
-      object-fit: cover;
-      background: #12161d;
-      border: 1px solid rgba(255,255,255,.06);
-    }
-
-    .draft-noimg,
-    .share-noimg {
-      display: grid;
-      place-items: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .draft-title {
-      margin: 0 0 6px;
-      font-size: 15px;
-      line-height: 1.35;
-    }
-
-    .draft-reason {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.55;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .remove {
-      color: var(--danger);
-      background: rgba(255,140,140,.08);
-      border: 1px solid rgba(255,140,140,.16);
-    }
-
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .toolbar h2 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .tip {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.55;
-    }
-
-    .preview-wrap {
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      overflow: auto;
-      max-height: calc(100vh - 120px);
-    }
-
-    .share-board {
-      width: 820px;
-      background: #11151c;
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 28px;
-      padding: 30px;
-      box-shadow: 0 18px 44px rgba(0,0,0,.26);
-    }
-
-    .board-top {
-      margin-bottom: 20px;
-    }
-
-    .board-kicker {
-      display: inline-block;
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: #edf1f8;
-      color: #0f131a;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: .08em;
-      margin-bottom: 14px;
-    }
-
-    .board-title {
-      margin: 0 0 8px;
-      font-size: 36px;
-      line-height: 1.12;
-      letter-spacing: -0.03em;
-    }
-
-    .board-sub {
-      margin: 0;
-      color: #a6b0c2;
-      font-size: 15px;
-      line-height: 1.65;
-    }
-
-    .share-items {
-      display: grid;
-      gap: 14px;
-      margin-top: 20px;
-    }
-
-    .share-item {
-      display: grid;
-      grid-template-columns: 108px 1fr;
-      gap: 16px;
-      align-items: center;
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 22px;
-      padding: 14px;
-    }
-
-    .share-cover {
-      width: 108px;
-      height: 108px;
-      border-radius: 18px;
-      object-fit: cover;
-      background: #181d26;
-      border: 1px solid rgba(255,255,255,.06);
-    }
-
-    .share-song {
-      margin: 0 0 8px;
-      font-size: 23px;
-      line-height: 1.25;
-    }
-
-    .share-reason {
-      margin: 0;
-      color: #d0d6e3;
-      font-size: 15px;
-      line-height: 1.72;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .empty {
-      text-align: center;
-      padding: 64px 20px;
-      color: var(--muted);
-      border: 1px dashed #384150;
-      border-radius: 22px;
-      background: rgba(255,255,255,.015);
-    }
-
-    .foot {
-      margin-top: 18px;
-      text-align: right;
-      color: #8e98aa;
-      font-size: 12px;
-    }
-
-    .status {
-      margin-top: 12px;
-      min-height: 20px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    @media (max-width: 980px) {
-      .wrap { grid-template-columns: 1fr; }
-      .left { position: static; }
-      .preview-wrap { max-height: none; }
-      .share-board { width: 100%; }
-    }
-
-    @media (max-width: 640px) {
-      .wrap { width: calc(100vw - 18px); margin: 10px auto 22px; }
-      .section, .toolbar, .preview-wrap { padding-left: 14px; padding-right: 14px; }
-      .share-board { padding: 18px; border-radius: 22px; }
-      .board-title { font-size: 28px; }
-      .share-item { grid-template-columns: 82px 1fr; gap: 12px; }
-      .share-cover { width: 82px; height: 82px; border-radius: 14px; }
-      .share-song { font-size: 19px; }
-      .share-reason { font-size: 14px; line-height: 1.65; }
-      .draft-item { grid-template-columns: 56px 1fr auto; }
-      .draft-cover { width: 56px; height: 56px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="panel left">
-      <div class="section">
-        <h1>Media Share List</h1>
-        <p class="sub">For music, games, films, shows, or anything else. Add items, build the list, then share it as a clean image.</p>
-      </div>
-
-      <div class="section">
-        <label for="listTitle">List title (optional)</label>
-        <input id="listTitle" type="text" placeholder="Example: 8 things I recommend this month" />
-      </div>
-
-      <div class="section">
-        <label for="itemName">Item title</label>
-        <input id="itemName" type="text" placeholder="Enter a title" />
-
-        <div style="height:12px"></div>
-
-        <label for="itemReason">Why recommend it</label>
-        <textarea id="itemReason" placeholder="A short reason works best"></textarea>
-
-        <div style="height:12px"></div>
-
-        <label>Thumbnail (optional)</label>
-        <div class="thumb-pick">
-          <label class="file">
-            Choose image
-            <input id="thumbInput" type="file" accept="image/*" />
-          </label>
-          <img id="thumbPreview" class="thumb-preview" alt="thumbnail preview" />
-          <div id="thumbName" class="thumb-name">No image selected</div>
-        </div>
-
-        <div style="height:14px"></div>
-
-        <button id="addBtn" class="primary" style="width:100%;">Add item</button>
-        <div id="status" class="status"></div>
-      </div>
-
-      <div class="section">
-        <div class="list-head">
-          <div>
-            <strong>Items</strong>
-            <div id="count" class="count">0 items</div>
+      </style>
+    </head>
+    <body>
+      <div class="shell">
+        <aside class="panel side">
+          <div class="section hero">
+            <div class="eyebrow">Recommended</div>
+            <h1>Lambda Picks</h1>
+            <p class="hero-copy">Curate music, films, series, games and more. Build a sharp share image with minimal effort.</p>
           </div>
-          <button id="clearBtn" class="ghost tiny">Clear all</button>
-        </div>
-        <div id="draftList" class="draft-list"></div>
-      </div>
-    </div>
 
-    <div class="panel right">
-      <div class="toolbar">
-        <div>
-          <h2>Preview</h2>
-          <div class="tip">Build the list first. Then share it or save it as a PNG.</div>
-        </div>
-        <div class="row">
-          <button id="buildBtn" class="secondary">Build list</button>
-          <button id="shareBtn" class="primary">Share list</button>
-        </div>
-      </div>
-      <div class="preview-wrap">
-        <div id="shareBoard" class="share-board"></div>
-      </div>
-    </div>
-  </div>
+          <div class="section form-grid">
+            <div class="field">
+              <label for="listTitle">Collection title</label>
+              <input id="listTitle" type="text" placeholder="Weekend essentials" />
+            </div>
 
-  <script>
-    const STORAGE_KEY = 'media-share-list-v2';
+            <div class="field">
+              <label for="itemCategory">Category</label>
+              <select id="itemCategory">
+                <option value="music">Music</option>
+                <option value="film">Film</option>
+                <option value="series">Series</option>
+                <option value="game">Game</option>
+                <option value="anime">Anime</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="itemName">Item title</label>
+              <input id="itemName" type="text" placeholder="NieR: Automata" />
+            </div>
+
+            <div class="field">
+              <label for="itemReason">Why recommend it</label>
+              <textarea id="itemReason" placeholder="Short, precise, worth sharing."></textarea>
+            </div>
+
+            <div class="field">
+              <label>Thumbnail (optional)</label>
+              <div class="thumb-row">
+                <label class="file-btn">
+                  <span>Choose image</span>
+                  <input id="thumbInput" type="file" accept="image/*" />
+                </label>
+                <img id="thumbPreview" class="thumb-preview" alt="thumbnail preview" />
+              </div>
+              <div id="thumbName" class="thumb-name">No image selected</div>
+            </div>
+
+            <div class="actions">
+              <button class="btn primary" id="addBtn">Add item</button>
+              <button class="btn secondary" id="buildBtn">Build preview</button>
+              <button class="btn secondary" id="shareBtn">Export image</button>
+              <button class="btn ghost" id="clearBtn">Clear all</button>
+            </div>
+
+            <div id="status" class="status">Ready.</div>
+          </div>
+        </aside>
+
+        <main class="stack">
+          <section class="panel section">
+            <div class="section-head">
+              <div>
+                <div class="section-title">Queue</div>
+                <div class="section-sub">Draft items before export</div>
+              </div>
+              <div id="count" class="count">0 items</div>
+            </div>
+            <div id="draftList" class="draft-list"></div>
+          </section>
+
+          <section class="panel section preview-shell">
+            <div class="section-head">
+              <div>
+                <div class="section-title">Share preview</div>
+                <div class="section-sub">This is the layout that will be rendered into the final image</div>
+              </div>
+            </div>
+            <div id="shareBoard" class="share-board"></div>
+          </section>
+        </main>
+      </div>
+
+      <script>
+
+const canvasPanelFill = 'rgba(255,255,255,0.03)';
+const canvasPanelStroke = 'rgba(255,255,255,0.08)';
+const canvasCardFill = 'rgba(255,255,255,0.035)';
+const canvasCardStroke = 'rgba(255,255,255,0.08)';
+const canvasHeadingText = '#f2f5f9';
+const canvasBodyText = '#cad2df';
+const canvasMutedText = '#99a5b8';
+const canvasImageEmptyFill = '#171c23';
+const canvasCardRadius = 24;
+const canvasFootText = 'Made with Lambda Picks';
+
+
+        function drawCanvasTheme(g, width, height) {
+
+const bg = g.createLinearGradient(0, 0, 0, height);
+bg.addColorStop(0, '#0b0d10');
+bg.addColorStop(1, '#141920');
+g.fillStyle = bg;
+g.fillRect(0, 0, width, height);
+
+        }
+
+        function drawCanvasHeader(g, title, titleLines, padding, cardWidth, count) {
+
+roundRect(g, padding + 26, padding + 26, 194, 42, 21);
+g.fillStyle = '#eef3f8';
+g.fill();
+g.fillStyle = '#10141a';
+g.font = '800 18px Inter, Arial, sans-serif';
+g.fillText('LAMBDA PICKS', padding + 44, padding + 53);
+
+g.fillStyle = '#f3f6fb';
+g.font = '700 46px Inter, Arial, sans-serif';
+let titleY = padding + 118;
+titleLines.forEach(line => {
+  g.fillText(line, padding + 28, titleY);
+  titleY += 58;
+});
+
+g.fillStyle = '#aab4c3';
+g.font = '400 24px Inter, Arial, sans-serif';
+g.fillText(`${count} ${count === 1 ? 'item' : 'items'} · ready to share`, padding + 28, titleY + 12);
+
+        }
+
+        function drawCanvasCategory(g, text, x, y) {
+
+const padX = 12;
+const h = 28;
+g.font = '800 14px Inter, Arial, sans-serif';
+const w = g.measureText(text).width + padX * 2;
+roundRect(g, x, y, w, h, 14);
+g.fillStyle = '#eef3f8';
+g.fill();
+g.fillStyle = '#10141a';
+g.fillText(text.toUpperCase(), x + padX, y + 19);
+
+        }
+
+
+    const STORAGE_KEY = '__lambda_picks_local_v2__';
+    let items = [];
+    let currentThumb = '';
+
     const listTitleEl = document.getElementById('listTitle');
+    const itemCategoryEl = document.getElementById('itemCategory');
     const itemNameEl = document.getElementById('itemName');
     const itemReasonEl = document.getElementById('itemReason');
     const thumbInputEl = document.getElementById('thumbInput');
@@ -495,20 +230,17 @@
     const buildBtn = document.getElementById('buildBtn');
     const shareBtn = document.getElementById('shareBtn');
     const clearBtn = document.getElementById('clearBtn');
+    const countEl = document.getElementById('count');
     const draftListEl = document.getElementById('draftList');
     const shareBoardEl = document.getElementById('shareBoard');
-    const countEl = document.getElementById('count');
     const statusEl = document.getElementById('status');
 
-    let items = [];
-    let currentThumb = '';
-
     function uid() {
-      return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
     }
 
-    function setStatus(msg) {
-      statusEl.textContent = msg || '';
+    function setStatus(text) {
+      statusEl.textContent = text;
     }
 
     function escapeHtml(str) {
@@ -518,6 +250,18 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+    }
+
+    function categoryLabel(value) {
+      const labels = {
+        music: 'Music',
+        film: 'Film',
+        series: 'Series',
+        game: 'Game',
+        anime: 'Anime',
+        other: 'Other'
+      };
+      return labels[value] || 'Other';
     }
 
     function save() {
@@ -548,19 +292,20 @@
     function renderDraftList() {
       countEl.textContent = `${items.length} ${items.length === 1 ? 'item' : 'items'}`;
       if (!items.length) {
-        draftListEl.innerHTML = `<div class="empty" style="padding:24px 14px;">No items yet.</div>`;
+        draftListEl.innerHTML = `<div class="empty-state">No items yet.</div>`;
         return;
       }
 
       draftListEl.innerHTML = items.map(item => `
-        <div class="draft-item">
+        <article class="draft-item">
           ${item.thumb ? `<img class="draft-cover" src="${item.thumb}" alt="cover" />` : `<div class="draft-cover draft-noimg">No image</div>`}
-          <div>
+          <div class="draft-meta">
+            <div class="draft-badges"><span class="badge">${escapeHtml(categoryLabel(item.category))}</span></div>
             <h3 class="draft-title">${escapeHtml(item.name)}</h3>
             <p class="draft-reason">${escapeHtml(item.reason)}</p>
           </div>
-          <button class="remove tiny" data-id="${item.id}">Remove</button>
-        </div>
+          <button class="remove-btn" data-id="${item.id}">Delete</button>
+        </article>
       `).join('');
 
       draftListEl.querySelectorAll('[data-id]').forEach(btn => {
@@ -569,6 +314,7 @@
           save();
           renderDraftList();
           renderShareBoard();
+          setStatus('Item removed.');
         });
       });
     }
@@ -577,34 +323,35 @@
       const title = listTitleEl.value.trim() || 'Current Picks';
       if (!items.length) {
         shareBoardEl.innerHTML = `
-          <div class="board-top">
-            <div class="board-kicker">MEDIA PICKS</div>
+          <div class="board-header">
+            <span class="board-chip">LAMBDA PICKS</span>
             <h2 class="board-title">${escapeHtml(title)}</h2>
-            <p class="board-sub">Your final shared image will appear here.</p>
+            <p class="board-sub">Build a clean share image for music, films, series, games and more.</p>
           </div>
-          <div class="empty">Empty list</div>
+          <div class="empty-state large">Your share image preview will appear here.</div>
         `;
         return;
       }
 
       shareBoardEl.innerHTML = `
-        <div class="board-top">
-          <div class="board-kicker">MEDIA PICKS</div>
+        <div class="board-header">
+          <span class="board-chip">LAMBDA PICKS</span>
           <h2 class="board-title">${escapeHtml(title)}</h2>
-          <p class="board-sub">${items.length} ${items.length === 1 ? 'item' : 'items'} · ready to share</p>
+          <p class="board-sub">${items.length} ${items.length === 1 ? 'item' : 'items'} · ready to export</p>
         </div>
-        <div class="share-items">
+        <section class="share-items">
           ${items.map(item => `
-            <div class="share-item">
+            <article class="share-item">
               ${item.thumb ? `<img class="share-cover" src="${item.thumb}" alt="cover" />` : `<div class="share-cover share-noimg">No image</div>`}
-              <div>
-                <h3 class="share-song">${escapeHtml(item.name)}</h3>
+              <div class="share-meta">
+                <span class="badge">${escapeHtml(categoryLabel(item.category))}</span>
+                <h3 class="share-name">${escapeHtml(item.name)}</h3>
                 <p class="share-reason">${escapeHtml(item.reason)}</p>
               </div>
-            </div>
+            </article>
           `).join('')}
-        </div>
-        <div class="foot">Generated locally</div>
+        </section>
+        <div class="board-foot">Generated locally from Lambda Picks</div>
       `;
       save();
     }
@@ -636,19 +383,15 @@
     });
 
     addBtn.addEventListener('click', () => {
+      const category = itemCategoryEl.value;
       const name = itemNameEl.value.trim();
       const reason = itemReasonEl.value.trim();
-      if (!name) {
-        setStatus('Enter a title first.');
-        return;
-      }
-      if (!reason) {
-        setStatus('Add a short reason.');
-        return;
-      }
+      if (!name) return setStatus('Enter a title first.');
+      if (!reason) return setStatus('Add a short reason.');
 
       items.push({
         id: uid(),
+        category,
         name,
         reason,
         thumb: currentThumb || ''
@@ -656,15 +399,17 @@
 
       itemNameEl.value = '';
       itemReasonEl.value = '';
+      itemCategoryEl.value = 'music';
       resetThumbInput();
-      setStatus('Added.');
       save();
       renderDraftList();
+      renderShareBoard();
+      setStatus('Item added.');
     });
 
     buildBtn.addEventListener('click', () => {
       renderShareBoard();
-      setStatus('List built.');
+      setStatus('Preview updated.');
     });
 
     clearBtn.addEventListener('click', () => {
@@ -672,7 +417,7 @@
       save();
       renderDraftList();
       renderShareBoard();
-      setStatus('Cleared.');
+      setStatus('All items cleared.');
     });
 
     listTitleEl.addEventListener('input', save);
@@ -721,157 +466,127 @@
     async function drawShareCanvas() {
       const title = listTitleEl.value.trim() || 'Current Picks';
       const width = 1080;
-      const padding = 40;
-      const headerTop = 44;
-      const coverSize = 132;
-      const cardGap = 18;
+      const padding = 42;
+      const coverSize = 128;
+      const gap = 18;
       const innerPad = 18;
       const cardWidth = width - padding * 2;
-      const textWidth = cardWidth - innerPad * 2 - coverSize - 18;
+      const textWidth = cardWidth - innerPad * 2 - coverSize - 20;
 
       const tempCanvas = document.createElement('canvas');
       const ctx = tempCanvas.getContext('2d');
-
-      ctx.font = '700 46px Inter, "Segoe UI", Arial, sans-serif';
-      const titleLines = wrapText(ctx, title, cardWidth - 10);
+      ctx.font = '700 46px Inter, Arial, sans-serif';
+      const titleLines = wrapText(ctx, title, cardWidth - 16);
       const titleHeight = titleLines.length * 58;
 
       const imageCache = await Promise.all(items.map(item => loadImage(item.thumb)));
-
-      let y = padding + headerTop + 28 + titleHeight + 54;
       const layouts = [];
+      let y = padding + 172 + titleHeight;
 
       items.forEach((item, i) => {
-        ctx.font = '700 34px Inter, "Segoe UI", Arial, sans-serif';
-        const itemLines = wrapText(ctx, item.name, textWidth);
-        ctx.font = '400 24px Inter, "Segoe UI", Arial, sans-serif';
+        ctx.font = '700 34px Inter, Arial, sans-serif';
+        const nameLines = wrapText(ctx, item.name, textWidth);
+        ctx.font = '400 24px Inter, Arial, sans-serif';
         const reasonLines = wrapText(ctx, item.reason, textWidth);
-
-        const textHeight = itemLines.length * 42 + 10 + reasonLines.length * 34;
+        const textHeight = 32 + nameLines.length * 42 + 12 + reasonLines.length * 34;
         const cardHeight = Math.max(coverSize, textHeight) + innerPad * 2;
-
         layouts.push({
+          item,
+          image: imageCache[i],
           y,
           cardHeight,
-          itemLines,
-          reasonLines,
-          image: imageCache[i]
+          nameLines,
+          reasonLines
         });
-        y += cardHeight + cardGap;
+        y += cardHeight + gap;
       });
 
-      const footerHeight = 40;
-      const height = y + footerHeight + padding;
+      const height = y + 62;
       tempCanvas.width = width;
       tempCanvas.height = height;
 
       const g = tempCanvas.getContext('2d');
-      const bg = g.createLinearGradient(0, 0, 0, height);
-      bg.addColorStop(0, '#0f1319');
-      bg.addColorStop(1, '#141a22');
-      g.fillStyle = bg;
-      g.fillRect(0, 0, width, height);
+      drawCanvasTheme(g, width, height);
 
       roundRect(g, padding, padding, cardWidth, height - padding * 2, 32);
-      g.fillStyle = 'rgba(255,255,255,0.02)';
-      g.strokeStyle = 'rgba(255,255,255,0.08)';
+      g.fillStyle = canvasPanelFill;
+      g.strokeStyle = canvasPanelStroke;
       g.lineWidth = 1;
       g.fill();
       g.stroke();
 
-      const chipX = padding + 28;
-      const chipY = padding + 28;
-      roundRect(g, chipX, chipY, 190, 42, 21);
-      g.fillStyle = '#eef2f8';
-      g.fill();
-      g.fillStyle = '#11161d';
-      g.font = '800 18px Inter, "Segoe UI", Arial, sans-serif';
-      g.fillText('MEDIA PICKS', chipX + 18, chipY + 27);
+      drawCanvasHeader(g, title, titleLines, padding, cardWidth, items.length);
 
-      g.fillStyle = '#f3f6fb';
-      g.font = '700 46px Inter, "Segoe UI", Arial, sans-serif';
-      let titleY = padding + 118;
-      titleLines.forEach(line => {
-        g.fillText(line, padding + 28, titleY);
-        titleY += 58;
-      });
-
-      g.fillStyle = '#aab3c4';
-      g.font = '400 24px Inter, "Segoe UI", Arial, sans-serif';
-      g.fillText(`${items.length} ${items.length === 1 ? 'item' : 'items'} · Generated locally`, padding + 28, titleY + 14);
-
-      layouts.forEach((layout) => {
+      layouts.forEach(layout => {
         const cardX = padding + 18;
         const cardY = layout.y;
         const cardW = cardWidth - 36;
-        roundRect(g, cardX, cardY, cardW, layout.cardHeight, 24);
-        g.fillStyle = 'rgba(255,255,255,0.03)';
-        g.strokeStyle = 'rgba(255,255,255,0.08)';
+        roundRect(g, cardX, cardY, cardW, layout.cardHeight, canvasCardRadius);
+        g.fillStyle = canvasCardFill;
+        g.strokeStyle = canvasCardStroke;
         g.lineWidth = 1;
         g.fill();
         g.stroke();
 
         const coverX = cardX + innerPad;
         const coverY = cardY + innerPad;
-        roundRect(g, coverX, coverY, coverSize, coverSize, 20);
+        roundRect(g, coverX, coverY, coverSize, coverSize, 18);
         g.save();
         g.clip();
         if (layout.image) {
           g.drawImage(layout.image, coverX, coverY, coverSize, coverSize);
         } else {
-          g.fillStyle = '#1c222c';
+          g.fillStyle = canvasImageEmptyFill;
           g.fillRect(coverX, coverY, coverSize, coverSize);
-          g.fillStyle = '#9ba5b8';
-          g.font = '600 18px Inter, "Segoe UI", Arial, sans-serif';
-          const noImg = 'No image';
-          const w = g.measureText(noImg).width;
-          g.fillText(noImg, coverX + (coverSize - w) / 2, coverY + coverSize / 2 + 8);
+          g.fillStyle = canvasMutedText;
+          g.font = '600 16px Inter, Arial, sans-serif';
+          const label = 'No image';
+          const w = g.measureText(label).width;
+          g.fillText(label, coverX + (coverSize - w) / 2, coverY + coverSize / 2 + 6);
         }
         g.restore();
 
-        const textX = coverX + coverSize + 18;
-        let textY = coverY + 32;
+        const textX = coverX + coverSize + 20;
+        let textY = coverY + 24;
+        drawCanvasCategory(g, categoryLabel(layout.item.category), textX, textY - 10);
+        textY += 28;
 
-        g.fillStyle = '#eef2f8';
-        g.font = '700 34px Inter, "Segoe UI", Arial, sans-serif';
-        layout.itemLines.forEach(line => {
-          g.fillText(line, textX, textY);
+        g.fillStyle = canvasHeadingText;
+        g.font = '700 34px Inter, Arial, sans-serif';
+        layout.nameLines.forEach(line => {
+          g.fillText(line, textX, textY + 12);
           textY += 42;
         });
 
         textY += 8;
-        g.fillStyle = '#c9d0dd';
-        g.font = '400 24px Inter, "Segoe UI", Arial, sans-serif';
+        g.fillStyle = canvasBodyText;
+        g.font = '400 24px Inter, Arial, sans-serif';
         layout.reasonLines.forEach(line => {
-          g.fillText(line, textX, textY);
+          g.fillText(line, textX, textY + 8);
           textY += 34;
         });
       });
 
-      g.fillStyle = '#9099aa';
-      g.font = '400 18px Inter, "Segoe UI", Arial, sans-serif';
-      const foot = 'Made for clean media sharing';
+      g.fillStyle = canvasMutedText;
+      g.font = '400 18px Inter, Arial, sans-serif';
+      const foot = canvasFootText;
       const footWidth = g.measureText(foot).width;
-      g.fillText(foot, width - padding - 28 - footWidth, height - 28);
+      g.fillText(foot, width - padding - footWidth, height - 28);
 
       return tempCanvas;
     }
 
     async function shareList() {
-      if (!items.length) {
-        setStatus('Add at least one item first.');
-        return;
-      }
+      if (!items.length) return setStatus('Add at least one item first.');
 
       renderShareBoard();
       setStatus('Generating image...');
-
       try {
         const canvas = await drawShareCanvas();
         const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
         if (!blob) throw new Error('PNG generation failed');
 
-        const title = (listTitleEl.value.trim() || 'media-share-list').replace(/[\\/:*?"<>|]+/g, '-');
+        const title = (listTitleEl.value.trim() || 'lambda-picks').replace(/[\\/:*?"<>|]+/g, '-');
         const file = new File([blob], `${title}.png`, { type: 'image/png' });
 
         const canNativeShare = navigator.canShare && navigator.canShare({ files: [file] });
@@ -887,7 +602,7 @@
         a.download = `${title}.png`;
         a.click();
         setTimeout(() => URL.revokeObjectURL(url), 2000);
-        setStatus('Your device does not support direct share. PNG downloaded instead.');
+        setStatus('PNG downloaded.');
       } catch (err) {
         console.error(err);
         setStatus('Share failed. Try again.');
@@ -899,6 +614,7 @@
     load();
     renderDraftList();
     renderShareBoard();
-  </script>
-</body>
-</html>
+
+      </script>
+    </body>
+    </html>
