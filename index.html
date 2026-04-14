@@ -71,7 +71,12 @@ body.preview-mode{background:transparent}
 .section-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:18px}
 .section-title{font-size:20px;font-weight:800;letter-spacing:-.02em}
 .draft-list,.share-items{display:grid;gap:14px}
-.draft-item,.share-item{display:grid;grid-template-columns:84px 1fr auto;gap:16px;align-items:start;padding:16px;border-radius:24px;background:rgba(255,255,255,.02);border:1px solid var(--line)}
+.draft-item,.share-item{display:grid;grid-template-columns:32px 84px 1fr auto;gap:16px;align-items:start;padding:16px;border-radius:24px;background:rgba(255,255,255,.02);border:1px solid var(--line)}
+.share-item{grid-template-columns:108px 1fr}
+.drag-handle{align-self:stretch;display:flex;align-items:center;justify-content:center;border-radius:16px;border:1px dashed rgba(255,255,255,.1);background:rgba(255,255,255,.015);color:var(--muted);font-size:16px;font-weight:800;cursor:grab;user-select:none;touch-action:none;min-height:84px}
+.drag-handle:active{cursor:grabbing}
+.draft-item.dragging{opacity:.45;border-color:rgba(255,255,255,.2)}
+.draft-item.drop-target{border-color:rgba(255,255,255,.32);background:rgba(255,255,255,.05)}
 .share-item{grid-template-columns:108px 1fr}
 .draft-cover,.share-cover{width:84px;height:84px;border-radius:18px;object-fit:cover;background:rgba(255,255,255,.02);border:1px solid var(--field-line)}
 .share-cover{width:108px;height:108px;border-radius:22px}
@@ -97,8 +102,10 @@ body.preview-mode{background:transparent}
   .shell{grid-template-columns:1fr}
   .side{position:static}
   .actions{grid-template-columns:1fr}
-  .draft-item,.share-item{grid-template-columns:72px 1fr}
-  .remove-btn{grid-column:2/3;justify-self:start}
+  .draft-item{grid-template-columns:28px 72px 1fr}
+  .share-item{grid-template-columns:72px 1fr}
+  .remove-btn{grid-column:3/4;justify-self:start}
+  .drag-handle{min-height:72px}
   .board-title{max-width:100%;font-size:40px}
   .board-brand{position:static;justify-self:start}
 }
@@ -177,7 +184,7 @@ body.preview-mode .share-board{min-height:660px}
       <div class="section-head">
         <div>
           <div class="section-title">Queue</div>
-          <div class="section-sub">Live list</div>
+          <div class="section-sub">Drag items to reorder</div>
         </div>
         <div id="count" class="count">0 items</div>
       </div>
@@ -278,6 +285,62 @@ function resetThumbInput() {
   thumbPreviewEl.src = '';
   thumbNameEl.textContent = 'No image selected';
 }
+function moveItem(fromIndex, toIndex) {
+  if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0 || fromIndex >= items.length || toIndex >= items.length) return;
+  const updated = [...items];
+  const [moved] = updated.splice(fromIndex, 1);
+  updated.splice(toIndex, 0, moved);
+  items = updated;
+}
+
+function attachDragSorting() {
+  let draggedId = null;
+  const cards = [...draftListEl.querySelectorAll('.draft-item[data-id]')];
+  cards.forEach(card => {
+    const handle = card.querySelector('.drag-handle');
+    if (!handle) return;
+    handle.addEventListener('dragstart', (e) => {
+      draggedId = card.dataset.id;
+      card.classList.add('dragging');
+      if (e.dataTransfer) {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', draggedId);
+      }
+    });
+    handle.addEventListener('dragend', () => {
+      draggedId = null;
+      draftListEl.querySelectorAll('.draft-item').forEach(el => el.classList.remove('dragging', 'drop-target'));
+    });
+  });
+
+  cards.forEach(card => {
+    card.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      if (!draggedId || draggedId === card.dataset.id) return;
+      draftListEl.querySelectorAll('.draft-item').forEach(el => el.classList.remove('drop-target'));
+      card.classList.add('drop-target');
+      if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+    });
+    card.addEventListener('dragleave', () => {
+      card.classList.remove('drop-target');
+    });
+    card.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const sourceId = draggedId || (e.dataTransfer ? e.dataTransfer.getData('text/plain') : '');
+      const targetId = card.dataset.id;
+      card.classList.remove('drop-target');
+      if (!sourceId || sourceId === targetId) return;
+      const fromIndex = items.findIndex(item => item.id === sourceId);
+      const toIndex = items.findIndex(item => item.id === targetId);
+      moveItem(fromIndex, toIndex);
+      save();
+      renderDraftList();
+      renderShareBoard();
+      setStatus('Order updated.');
+    });
+  });
+}
+
 function renderDraftList() {
   countEl.textContent = `${items.length} ${items.length === 1 ? 'item' : 'items'}`;
   if (!items.length) {
@@ -285,7 +348,8 @@ function renderDraftList() {
     return;
   }
   draftListEl.innerHTML = items.map(item => `
-    <article class="draft-item">
+    <article class="draft-item" data-id="${item.id}">
+      <div class="drag-handle" draggable="true" aria-label="Drag to reorder" title="Drag to reorder">⋮⋮</div>
       ${item.thumb ? `<img class="draft-cover" src="${item.thumb}" alt="cover" />` : `<div class="draft-cover draft-noimg">No image</div>`}
       <div class="draft-meta">
         <div class="meta-head">
@@ -297,7 +361,7 @@ function renderDraftList() {
       <button class="remove-btn" data-id="${item.id}">Delete</button>
     </article>
   `).join('');
-  draftListEl.querySelectorAll('[data-id]').forEach(btn => {
+  draftListEl.querySelectorAll('.remove-btn[data-id]').forEach(btn => {
     btn.addEventListener('click', () => {
       items = items.filter(item => item.id !== btn.dataset.id);
       save();
@@ -306,6 +370,8 @@ function renderDraftList() {
       setStatus('Item removed.');
     });
   });
+  attachDragSorting();
+  attachTouchSorting();
 }
 function renderShareBoard() {
   const title = listTitleEl.value.trim() || 'Untitled collection';
@@ -570,6 +636,57 @@ async function drawShareCanvas() {
   g.fillText(foot, width - padding - footW, height - padding - 16);
   return tempCanvas;
 }
+
+function attachTouchSorting() {
+  const handles = [...draftListEl.querySelectorAll('.drag-handle')];
+  let activeId = null;
+  let activeCard = null;
+  let lastSwapId = null;
+
+  handles.forEach(handle => {
+    handle.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      activeCard = handle.closest('.draft-item');
+      if (!activeCard) return;
+      activeId = activeCard.dataset.id;
+      lastSwapId = null;
+      activeCard.classList.add('dragging');
+      handle.setPointerCapture?.(e.pointerId);
+      e.preventDefault();
+    });
+
+    handle.addEventListener('pointermove', (e) => {
+      if (!activeId || !activeCard) return;
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const targetCard = el?.closest?.('.draft-item');
+      if (!targetCard || targetCard.dataset.id === activeId || targetCard.dataset.id === lastSwapId) return;
+      const fromIndex = items.findIndex(item => item.id === activeId);
+      const toIndex = items.findIndex(item => item.id === targetCard.dataset.id);
+      if (fromIndex === -1 || toIndex === -1) return;
+      moveItem(fromIndex, toIndex);
+      lastSwapId = targetCard.dataset.id;
+      renderDraftList();
+      renderShareBoard();
+      activeCard = draftListEl.querySelector(`.draft-item[data-id="${activeId}"]`);
+      activeCard?.classList.add('dragging');
+    });
+
+    const finish = () => {
+      if (!activeId) return;
+      save();
+      renderDraftList();
+      renderShareBoard();
+      setStatus('Order updated.');
+      activeId = null;
+      activeCard = null;
+      lastSwapId = null;
+    };
+
+    handle.addEventListener('pointerup', finish);
+    handle.addEventListener('pointercancel', finish);
+  });
+}
+
 shareBtn.addEventListener('click', async () => {
   if (!items.length) return setStatus('Add at least one item first.');
   setStatus('Exporting image...');
