@@ -461,6 +461,7 @@ function drawCanvasCategory(g, text, x, y) {
   g.fill();
   g.fillStyle = THEME.export_badge_text;
   g.fillText(display, x + padX, y + 19);
+  return { w, h };
 }
 async function drawShareCanvas() {
   const title = listTitleEl.value.trim() || 'Untitled collection';
@@ -484,7 +485,7 @@ async function drawShareCanvas() {
     const nameLines = wrapText(ctx, item.name, textWidth);
     ctx.font = '400 24px Inter, Arial, sans-serif';
     const reasonLines = wrapText(ctx, item.reason, textWidth);
-    const textHeight = 58 + nameLines.length * 42 + 18 + reasonLines.length * 34;
+    const textHeight = 82 + nameLines.length * 42 + 18 + reasonLines.length * 34;
     const cardHeight = Math.max(coverSize, textHeight) + innerPad * 2;
     layouts.push({item, image:imageCache[i], y, cardHeight, nameLines, reasonLines});
     y += cardHeight + gap;
@@ -545,9 +546,9 @@ async function drawShareCanvas() {
     }
     g.restore();
     const textX = coverX + coverSize + 22;
-    let textY = coverY + 8;
-    drawCanvasCategory(g, categoryLabel(layout.item.category), textX, textY);
-    textY += 50;
+    const badgeY = coverY + 8;
+    const badge = drawCanvasCategory(g, categoryLabel(layout.item.category), textX, badgeY);
+    let textY = badgeY + badge.h + 34;
     g.fillStyle = THEME.export_heading;
     g.font = '700 34px Inter, Arial, sans-serif';
     layout.nameLines.forEach(line => {
