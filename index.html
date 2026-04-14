@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Music Share List</title>
+  <style>
+    :root {
+      --bg: #0b0d12;
+      --panel: #131722;
+      --panel-2: #1a2030;
+      --line: #262d40;
+      --text: #eef2ff;
+      --muted: #a8b0c5;
+      --accent: #8fb7ff;
+      --accent-2: #d7e4ff;
+      --danger: #ff8c8c;
+      --shadow: 0 16px 40px rgba(0,0,0,.28);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(143,183,255,.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(255,255,255,.06), transparent 22%),
+        linear-gradient(180deg, #090b10 0%, #0d1017 100%);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      width: min(1180px, calc(100vw - 28px));
+      margin: 22px auto 36px;
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 18px;
+    }
+
+    .panel {
+      background: rgba(19, 23, 34, .92);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+
+    .left {
+      position: sticky;
+      top: 18px;
+      align-self: start;
+    }
+
+    .section {
+      padding: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section:last-child { border-bottom: none; }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
+      line-height: 1.15;
+      letter-spacing: .2px;
+    }
+
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--accent-2);
+      letter-spacing: .2px;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      background: #0f1320;
+      border: 1px solid #2b3348;
+      border-radius: 16px;
+      color: var(--text);
+      padding: 14px 14px;
+      font-size: 15px;
+      outline: none;
+      transition: .2s ease;
+      resize: vertical;
+    }
+
+    input[type="text"]:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(143, 183, 255, .12);
+    }
+
+    textarea {
+      min-height: 112px;
+      line-height: 1.6;
+    }
+
+    .thumb-pick {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .file {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 16px;
+      background: #101726;
+      border: 1px dashed #415071;
+      border-radius: 14px;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .file input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .thumb-preview {
+      width: 76px;
+      height: 76px;
+      object-fit: cover;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: #0f1320;
+      display: none;
+    }
+
+    .thumb-name {
+      color: var(--muted);
+      font-size: 13px;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 13px 18px;
+      cursor: pointer;
+      transition: transform .12s ease, opacity .2s ease, box-shadow .2s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+
+    .primary {
+      background: linear-gradient(180deg, #bcd2ff 0%, #8fb7ff 100%);
+      color: #08101f;
+      box-shadow: 0 10px 22px rgba(143,183,255,.26);
+    }
+
+    .secondary {
+      background: #1a2234;
+      color: var(--text);
+      border: 1px solid #32405f;
+    }
+
+    .ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid #2c3448;
+    }
+
+    .tiny {
+      padding: 8px 12px;
+      font-size: 13px;
+      border-radius: 12px;
+    }
+
+    .list-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .count {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .draft-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .draft-item {
+      display: grid;
+      grid-template-columns: 62px 1fr auto;
+      gap: 12px;
+      align-items: start;
+      padding: 12px;
+      background: #0f1320;
+      border: 1px solid #22293b;
+      border-radius: 18px;
+    }
+
+    .draft-cover {
+      width: 62px;
+      height: 62px;
+      border-radius: 14px;
+      object-fit: cover;
+      background: #161d2d;
+      border: 1px solid rgba(255,255,255,.06);
+    }
+
+    .draft-noimg {
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .draft-title {
+      margin: 0 0 6px;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .draft-reason {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .remove {
+      color: var(--danger);
+      background: rgba(255,140,140,.08);
+      border: 1px solid rgba(255,140,140,.18);
+    }
+
+    .right .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .toolbar h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .toolbar .tip {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .preview-wrap {
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      overflow: auto;
+      max-height: calc(100vh - 130px);
+    }
+
+    .share-board {
+      width: 820px;
+      background:
+        radial-gradient(circle at top left, rgba(143,183,255,.18), transparent 28%),
+        linear-gradient(180deg, #0d111a 0%, #12192a 100%);
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,.06);
+      padding: 30px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.28);
+    }
+
+    .board-top {
+      margin-bottom: 18px;
+    }
+
+    .board-kicker {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .4px;
+      color: #0b1323;
+      background: linear-gradient(180deg, #dfe9ff 0%, #aac6ff 100%);
+      margin-bottom: 14px;
+    }
+
+    .board-title {
+      margin: 0 0 8px;
+      font-size: 36px;
+      line-height: 1.16;
+    }
+
+    .board-sub {
+      margin: 0;
+      color: #aab4cf;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .share-items {
+      display: grid;
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .share-item {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      gap: 16px;
+      align-items: center;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 22px;
+      padding: 14px;
+    }
+
+    .share-cover {
+      width: 112px;
+      height: 112px;
+      border-radius: 18px;
+      object-fit: cover;
+      background: #171d2b;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .share-noimg {
+      display: grid;
+      place-items: center;
+      color: #97a2be;
+      font-size: 13px;
+    }
+
+    .share-song {
+      margin: 0 0 8px;
+      font-size: 24px;
+      line-height: 1.25;
+    }
+
+    .share-reason {
+      margin: 0;
+      color: #c2cbe0;
+      font-size: 15px;
+      line-height: 1.75;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 70px 20px;
+      color: var(--muted);
+      border: 1px dashed #31405d;
+      border-radius: 22px;
+      background: rgba(255,255,255,.02);
+    }
+
+    .foot {
+      margin-top: 18px;
+      text-align: right;
+      color: #8b96b0;
+      font-size: 12px;
+    }
+
+    .status {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      min-height: 20px;
+    }
+
+    @media (max-width: 980px) {
+      .wrap {
+        grid-template-columns: 1fr;
+      }
+      .left {
+        position: static;
+      }
+      .preview-wrap {
+        max-height: none;
+      }
+      .share-board {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .wrap { width: calc(100vw - 18px); margin: 10px auto 22px; }
+      .section, .toolbar, .preview-wrap { padding-left: 14px; padding-right: 14px; }
+      .share-board { padding: 18px; border-radius: 22px; }
+      .board-title { font-size: 28px; }
+      .share-item { grid-template-columns: 82px 1fr; gap: 12px; }
+      .share-cover { width: 82px; height: 82px; border-radius: 14px; }
+      .share-song { font-size: 19px; }
+      .share-reason { font-size: 14px; line-height: 1.65; }
+      .draft-item { grid-template-columns: 56px 1fr auto; }
+      .draft-cover { width: 56px; height: 56px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel left">
+      <div class="section">
+        <h1>音乐分享列表</h1>
+        <p class="sub">专门给 Discord 发歌单用。只做三件事：添加歌曲、生成列表、分享成一张图。</p>
+      </div>
+
+      <div class="section">
+        <label for="listTitle">列表标题（可选）</label>
+        <input id="listTitle" type="text" placeholder="比如：最近在循环的 8 首歌" />
+      </div>
+
+      <div class="section">
+        <label for="songName">歌名</label>
+        <input id="songName" type="text" placeholder="输入歌名" />
+
+        <div style="height:12px"></div>
+
+        <label for="songReason">推荐原因</label>
+        <textarea id="songReason" placeholder="为什么推荐这首歌，写短一点最好"></textarea>
+
+        <div style="height:12px"></div>
+
+        <label>缩略图（可选）</label>
+        <div class="thumb-pick">
+          <label class="file">
+            选择图片
+            <input id="thumbInput" type="file" accept="image/*" />
+          </label>
+          <img id="thumbPreview" class="thumb-preview" alt="thumbnail preview" />
+          <div id="thumbName" class="thumb-name">未选择图片</div>
+        </div>
+
+        <div style="height:14px"></div>
+
+        <button id="addBtn" class="primary" style="width:100%;">添加歌曲</button>
+        <div id="status" class="status"></div>
+      </div>
+
+      <div class="section">
+        <div class="list-head">
+          <div>
+            <strong>已添加歌曲</strong>
+            <div id="count" class="count">0 首</div>
+          </div>
+          <button id="clearBtn" class="ghost tiny">清空</button>
+        </div>
+        <div id="draftList" class="draft-list"></div>
+      </div>
+    </div>
+
+    <div class="panel right">
+      <div class="toolbar">
+        <div>
+          <h2>列表预览</h2>
+          <div class="tip">先点“生成列表”，满意后点“分享列表”。在支持的设备上会直接弹出系统分享；否则会自动下载 PNG。</div>
+        </div>
+        <div class="row">
+          <button id="buildBtn" class="secondary">生成列表</button>
+          <button id="shareBtn" class="primary">分享列表</button>
+        </div>
+      </div>
+      <div class="preview-wrap">
+        <div id="shareBoard" class="share-board"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'music-share-list-v1';
+    const listTitleEl = document.getElementById('listTitle');
+    const songNameEl = document.getElementById('songName');
+    const songReasonEl = document.getElementById('songReason');
+    const thumbInputEl = document.getElementById('thumbInput');
+    const thumbPreviewEl = document.getElementById('thumbPreview');
+    const thumbNameEl = document.getElementById('thumbName');
+    const addBtn = document.getElementById('addBtn');
+    const buildBtn = document.getElementById('buildBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const draftListEl = document.getElementById('draftList');
+    const shareBoardEl = document.getElementById('shareBoard');
+    const countEl = document.getElementById('count');
+    const statusEl = document.getElementById('status');
+
+    let songs = [];
+    let currentThumb = '';
+
+    function uid() {
+      return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    }
+
+    function setStatus(msg) {
+      statusEl.textContent = msg || '';
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        listTitle: listTitleEl.value.trim(),
+        songs
+      }));
+    }
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (data && Array.isArray(data.songs)) songs = data.songs;
+        if (data && typeof data.listTitle === 'string') listTitleEl.value = data.listTitle;
+      } catch (e) {}
+    }
+
+    function resetThumbInput() {
+      currentThumb = '';
+      thumbInputEl.value = '';
+      thumbPreviewEl.style.display = 'none';
+      thumbPreviewEl.src = '';
+      thumbNameEl.textContent = '未选择图片';
+    }
+
+    function renderDraftList() {
+      countEl.textContent = `${songs.length} 首`;
+      if (!songs.length) {
+        draftListEl.innerHTML = `<div class="empty" style="padding:24px 14px;">还没有歌曲，先在左边添加。</div>`;
+        return;
+      }
+
+      draftListEl.innerHTML = songs.map(song => `
+        <div class="draft-item">
+          ${song.thumb ? `<img class="draft-cover" src="${song.thumb}" alt="cover" />` : `<div class="draft-cover draft-noimg">无图</div>`}
+          <div>
+            <h3 class="draft-title">${escapeHtml(song.name)}</h3>
+            <p class="draft-reason">${escapeHtml(song.reason)}</p>
+          </div>
+          <button class="remove tiny" data-id="${song.id}">删除</button>
+        </div>
+      `).join('');
+
+      draftListEl.querySelectorAll('[data-id]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          songs = songs.filter(item => item.id !== btn.dataset.id);
+          save();
+          renderDraftList();
+          renderShareBoard();
+        });
+      });
+    }
+
+    function renderShareBoard() {
+      const title = listTitleEl.value.trim() || '最近在听';
+      if (!songs.length) {
+        shareBoardEl.innerHTML = `
+          <div class="board-top">
+            <div class="board-kicker">MUSIC SHARE LIST</div>
+            <h2 class="board-title">${escapeHtml(title)}</h2>
+            <p class="board-sub">这里会显示最终分享效果。先添加歌曲，再点“生成列表”。</p>
+          </div>
+          <div class="empty">空列表</div>
+        `;
+        return;
+      }
+
+      shareBoardEl.innerHTML = `
+        <div class="board-top">
+          <div class="board-kicker">MUSIC SHARE LIST</div>
+          <h2 class="board-title">${escapeHtml(title)}</h2>
+          <p class="board-sub">共 ${songs.length} 首。适合直接发到 Discord 频道里。</p>
+        </div>
+        <div class="share-items">
+          ${songs.map(song => `
+            <div class="share-item">
+              ${song.thumb ? `<img class="share-cover" src="${song.thumb}" alt="cover" />` : `<div class="share-cover share-noimg">NO IMAGE</div>`}
+              <div>
+                <h3 class="share-song">${escapeHtml(song.name)}</h3>
+                <p class="share-reason">${escapeHtml(song.reason)}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="foot">Generated locally</div>
+      `;
+      save();
+    }
+
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    thumbInputEl.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) {
+        resetThumbInput();
+        return;
+      }
+      try {
+        currentThumb = await readFileAsDataURL(file);
+        thumbPreviewEl.src = currentThumb;
+        thumbPreviewEl.style.display = 'block';
+        thumbNameEl.textContent = file.name;
+      } catch (err) {
+        setStatus('图片读取失败，请换一张图。');
+        resetThumbInput();
+      }
+    });
+
+    addBtn.addEventListener('click', () => {
+      const name = songNameEl.value.trim();
+      const reason = songReasonEl.value.trim();
+      if (!name) {
+        setStatus('请先输入歌名。');
+        return;
+      }
+      if (!reason) {
+        setStatus('请写一下推荐原因。');
+        return;
+      }
+
+      songs.push({
+        id: uid(),
+        name,
+        reason,
+        thumb: currentThumb || ''
+      });
+
+      songNameEl.value = '';
+      songReasonEl.value = '';
+      resetThumbInput();
+      setStatus('已添加。');
+      save();
+      renderDraftList();
+    });
+
+    buildBtn.addEventListener('click', () => {
+      renderShareBoard();
+      setStatus('列表已生成。');
+    });
+
+    clearBtn.addEventListener('click', () => {
+      songs = [];
+      save();
+      renderDraftList();
+      renderShareBoard();
+      setStatus('已清空。');
+    });
+
+    listTitleEl.addEventListener('input', () => {
+      save();
+    });
+
+    function loadImage(src) {
+      return new Promise((resolve) => {
+        if (!src) return resolve(null);
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      const rr = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + rr, y);
+      ctx.arcTo(x + w, y, x + w, y + h, rr);
+      ctx.arcTo(x + w, y + h, x, y + h, rr);
+      ctx.arcTo(x, y + h, x, y, rr);
+      ctx.arcTo(x, y, x + w, y, rr);
+      ctx.closePath();
+    }
+
+    function wrapText(ctx, text, maxWidth) {
+      const rawLines = String(text).split(/\n/);
+      const lines = [];
+      for (const raw of rawLines) {
+        const chars = [...raw];
+        let current = '';
+        for (const ch of chars) {
+          const test = current + ch;
+          if (ctx.measureText(test).width > maxWidth && current) {
+            lines.push(current);
+            current = ch;
+          } else {
+            current = test;
+          }
+        }
+        lines.push(current || ' ');
+      }
+      return lines;
+    }
+
+    async function drawShareCanvas() {
+      const title = listTitleEl.value.trim() || '最近在听';
+      const width = 1080;
+      const padding = 40;
+      const headerTop = 44;
+      const coverSize = 132;
+      const cardGap = 18;
+      const innerPad = 18;
+      const cardWidth = width - padding * 2;
+      const textWidth = cardWidth - innerPad * 2 - coverSize - 18;
+
+      const tempCanvas = document.createElement('canvas');
+      const ctx = tempCanvas.getContext('2d');
+
+      ctx.font = '700 46px "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif';
+      const titleLines = wrapText(ctx, title, cardWidth - 10);
+      const titleHeight = titleLines.length * 58;
+
+      const imageCache = await Promise.all(songs.map(song => loadImage(song.thumb)));
+
+      let y = padding + headerTop + 28 + titleHeight + 54;
+      const layouts = [];
+
+      songs.forEach((song, i) => {
+        ctx.font = '700 34px "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif';
+        const songLines = wrapText(ctx, song.name, textWidth);
+        ctx.font = '400 24px "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif';
+        const reasonLines = wrapText(ctx, song.reason, textWidth);
+
+        const textHeight = songLines.length * 42 + 10 + reasonLines.length * 34;
+        const cardHeight = Math.max(coverSize, textHeight) + innerPad * 2;
+
+        layouts.push({
+          y,
+          cardHeight,
+          songLines,
+          reasonLines,
+          image: imageCache[i]
+        });
+        y += cardHeight + cardGap;
+      });
+
+      const footerHeight = 40;
+      const height = y + footerHeight + padding;
+      tempCanvas.width = width;
+      tempCanvas.height = height;
+
+      const g = tempCanvas.getContext('2d');
+      const bg = g.createLinearGradient(0, 0, 0, height);
+      bg.addColorStop(0, '#0d111a');
+      bg.addColorStop(1, '#12192a');
+      g.fillStyle = bg;
+      g.fillRect(0, 0, width, height);
+
+      const glow = g.createRadialGradient(140, 80, 20, 140, 80, 360);
+      glow.addColorStop(0, 'rgba(143,183,255,.22)');
+      glow.addColorStop(1, 'rgba(143,183,255,0)');
+      g.fillStyle = glow;
+      g.fillRect(0, 0, width, height);
+
+      roundRect(g, padding, padding, cardWidth, height - padding * 2, 32);
+      g.fillStyle = 'rgba(255,255,255,0.02)';
+      g.strokeStyle = 'rgba(255,255,255,0.08)';
+      g.lineWidth = 1;
+      g.fill();
+      g.stroke();
+
+      const chipX = padding + 28;
+      const chipY = padding + 28;
+      roundRect(g, chipX, chipY, 240, 42, 21);
+      const chipGrad = g.createLinearGradient(0, chipY, 0, chipY + 42);
+      chipGrad.addColorStop(0, '#dfe9ff');
+      chipGrad.addColorStop(1, '#aac6ff');
+      g.fillStyle = chipGrad;
+      g.fill();
+      g.fillStyle = '#0b1323';
+      g.font = '700 18px "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif';
+      g.fillText('MUSIC SHARE LIST', chipX + 18, chipY + 27);
+
+      g.fillStyle = '#eef2ff';
+      g.font = '700 46px "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif';
+      let titleY = padding + 118;
+      titleLines.forEach(line => {
+        g.fillText(line, padding + 28, titleY);
+        titleY += 58;
+      });
+
+      g.fillStyle = '#aab4cf';
+      g.font = '400 24px "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif';
+      g.fillText(`共 ${songs.length} 首 · Generated locally`, padding + 28, titleY + 14);
+
+      layouts.forEach((layout, i) => {
+        const cardX = padding + 18;
+        const cardY = layout.y;
+        const cardW = cardWidth - 36;
+        roundRect(g, cardX, cardY, cardW, layout.cardHeight, 24);
+        g.fillStyle = 'rgba(255,255,255,0.035)';
+        g.strokeStyle = 'rgba(255,255,255,0.08)';
+        g.lineWidth = 1;
+        g.fill();
+        g.stroke();
+
+        const coverX = cardX + innerPad;
+        const coverY = cardY + innerPad;
+        roundRect(g, coverX, coverY, coverSize, coverSize, 20);
+        g.save();
+        g.clip();
+        if (layout.image) {
+          g.drawImage(layout.image, coverX, coverY, coverSize, coverSize);
+        } else {
+          g.fillStyle = '#1a2234';
+          g.fillRect(coverX, coverY, coverSize, coverSize);
+          g.fillStyle = '#98a4bf';
+          g.font = '600 18px "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif';
+          const noImg = 'NO IMAGE';
+          const w = g.measureText(noImg).width;
+          g.fillText(noImg, coverX + (coverSize - w) / 2, coverY + coverSize / 2 + 8);
+        }
+        g.restore();
+
+        const textX = coverX + coverSize + 18;
+        let textY = coverY + 32;
+
+        g.fillStyle = '#eef2ff';
+        g.font = '700 34px "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif';
+        layout.songLines.forEach(line => {
+          g.fillText(line, textX, textY);
+          textY += 42;
+        });
+
+        textY += 8;
+        g.fillStyle = '#c2cbe0';
+        g.font = '400 24px "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif';
+        layout.reasonLines.forEach(line => {
+          g.fillText(line, textX, textY);
+          textY += 34;
+        });
+      });
+
+      g.fillStyle = '#8b96b0';
+      g.font = '400 18px "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif';
+      const foot = 'Made for Discord music sharing';
+      const footWidth = g.measureText(foot).width;
+      g.fillText(foot, width - padding - 28 - footWidth, height - 28);
+
+      return tempCanvas;
+    }
+
+    async function shareList() {
+      if (!songs.length) {
+        setStatus('先添加至少一首歌。');
+        return;
+      }
+
+      renderShareBoard();
+      setStatus('正在生成分享图…');
+
+      try {
+        const canvas = await drawShareCanvas();
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        if (!blob) throw new Error('PNG 生成失败');
+
+        const title = (listTitleEl.value.trim() || 'music-share-list').replace(/[\\/:*?"<>|]+/g, '-');
+        const file = new File([blob], `${title}.png`, { type: 'image/png' });
+
+        const canNativeShare = navigator.canShare && navigator.canShare({ files: [file] });
+        if (canNativeShare && navigator.share) {
+          await navigator.share({
+            files: [file],
+            title,
+            text: title
+          });
+          setStatus('已调用系统分享。');
+          return;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${title}.png`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        setStatus('当前设备不支持直接分享，已为你下载 PNG。把这张图发到 Discord 就行。');
+      } catch (err) {
+        console.error(err);
+        setStatus('分享失败，请重试。');
+      }
+    }
+
+    shareBtn.addEventListener('click', shareList);
+
+    load();
+    renderDraftList();
+    renderShareBoard();
+  </script>
+</body>
+</html>
