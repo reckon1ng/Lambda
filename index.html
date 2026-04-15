@@ -3,31 +3,31 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Lambda Picks — Velvet Gallery</title>
+<title>Lambda Picks — Merlot Signal</title>
 <style>
 :root {
-  --bg:radial-gradient(circle at top left,#261d1b 0,#0e0d10 55%),linear-gradient(180deg,#0c0b0c,#161214);
-  --panel:rgba(23,18,20,.92);
-  --line:rgba(255,244,230,.09);
-  --text:#f7f1e9;
-  --muted:#b29f92;
-  --soft:#ead8cb;
-  --field-bg:#171214;
-  --field-line:rgba(255,244,230,.08);
-  --accent-bg:#f4e7d7;
-  --accent-text:#1b120c;
-  --button-secondary:#2a211d;
-  --button-ghost:#c2ad9e;
-  --danger:#ffd0c5;
-  --preview-bg:linear-gradient(180deg,#120f11,#0f0d10);
-  --preview-panel:rgba(255,248,240,.022);
-  --preview-line:rgba(255,244,230,.08);
-  --badge-bg:#f2e4d3;
-  --badge-text:#1a130e;
-  --brand-fill:#f6ebde;
-  --brand-text:#1a130e;
-  --brand-border:rgba(255,244,230,.14);
-  --title-size:55px;
+  --bg:radial-gradient(circle at top left,#3a1620 0,#0b0c10 50%),linear-gradient(180deg,#0b0a0d,#171419);
+  --panel:rgba(19,15,18,.94);
+  --line:rgba(255,246,240,.075);
+  --text:#f7f1ec;
+  --muted:#b49c96;
+  --soft:#edd8d1;
+  --field-bg:#140f13;
+  --field-line:rgba(255,246,240,.08);
+  --accent-bg:#f4e7df;
+  --accent-text:#1a1013;
+  --button-secondary:#301b22;
+  --button-ghost:#cfb3ad;
+  --danger:#ffd2cb;
+  --preview-bg:linear-gradient(180deg,#110d11,#0c0b0f);
+  --preview-panel:rgba(255,255,255,.022);
+  --preview-line:rgba(255,246,240,.08);
+  --badge-bg:#f2e5dd;
+  --badge-text:#1a1013;
+  --brand-fill:#f6ebe3;
+  --brand-text:#1a1013;
+  --brand-border:rgba(255,246,240,.14);
+  --title-size:58px;
   --hero-brand-size:16px;
 }
 *{box-sizing:border-box}
@@ -115,10 +115,20 @@ body.preview-mode .preview-panel>.section{padding:0;border:0}
 body.preview-mode .preview-panel{background:transparent;border:none;box-shadow:none}
 body.preview-mode .share-board{min-height:660px}
 
-.panel{box-shadow:0 32px 96px rgba(0,0,0,.3)}
-.brand-mark,.board-brand{border-radius:999px;padding:9px 14px;box-shadow:0 12px 24px rgba(0,0,0,.12)}
-.board-title{font-weight:740}
-.badge{box-shadow:0 1px 0 rgba(255,255,255,.16) inset}
+body{font-feature-settings:"ss01" 1}
+.brand-mark,.board-brand{border-radius:14px;padding:8px 12px;letter-spacing:.04em}
+.board-title,.draft-title,.share-name{font-family:Georgia,"Times New Roman",serif;font-weight:700;letter-spacing:-.04em}
+.hero-copy,.draft-reason,.share-reason,.board-sub{font-family:Georgia,"Times New Roman",serif}
+.badge{border-radius:12px}
+
+
+body{font-feature-settings:"ss01" 1, "liga" 1}
+.panel{box-shadow:0 30px 100px rgba(0,0,0,.34)}
+.brand-mark,.board-brand{border-radius:999px;padding:9px 15px;box-shadow:0 12px 32px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.22)}
+.board-title,.draft-title,.share-name{font-family:Georgia,"Times New Roman",serif;font-weight:700;letter-spacing:-.05em}
+.hero-copy,.draft-reason,.share-reason,.board-sub{font-family:Georgia,"Times New Roman",serif}
+.share-item,.draft-item,.form-block{background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(255,255,255,.014))}
+.badge{border-radius:999px;box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
 
 </style>
 </head>
@@ -213,22 +223,22 @@ body.preview-mode .share-board{min-height:660px}
 
 <script>
 const THEME = {
-  storageSuffix: "velvet_gallery",
-  export_bg_top: "#130f11",
-  export_bg_bottom: "#181214",
-  export_panel_fill: "rgba(255,248,240,.024)",
-  export_panel_stroke: "rgba(255,244,230,.08)",
-  export_card_fill: "rgba(255,248,240,.026)",
-  export_card_stroke: "rgba(255,244,230,.08)",
-  export_heading: "#f7f0e9",
-  export_body: "#d9c6b8",
-  export_muted: "#b39f92",
-  export_empty: "#1b1617",
-  export_badge_bg: "#f2e4d3",
-  export_badge_text: "#1b130d",
-  export_brand_bg: "#f5eadb",
-  export_brand_text: "#1a130e",
-  export_brand_line: "rgba(255,244,230,.14)"
+  storageSuffix: "merlot_signal",
+  export_bg_top: "#110d11",
+  export_bg_bottom: "#19131a",
+  export_panel_fill: "rgba(255,255,255,.022)",
+  export_panel_stroke: "rgba(255,246,240,.08)",
+  export_card_fill: "rgba(255,255,255,.025)",
+  export_card_stroke: "rgba(255,246,240,.08)",
+  export_heading: "#f7f1ec",
+  export_body: "#dccfca",
+  export_muted: "#b29994",
+  export_empty: "#1a1316",
+  export_badge_bg: "#f2e5dd",
+  export_badge_text: "#1a1013",
+  export_brand_bg: "#f6ebe3",
+  export_brand_text: "#1a1013",
+  export_brand_line: "rgba(255,246,240,.14)"
 };
 const STORAGE_KEY = '__lambda_picks_refresh__' + THEME.storageSuffix;
 const DEMO_MODE = new URLSearchParams(location.search).get('demo') === '1';
@@ -291,59 +301,112 @@ function resetThumbInput() {
   thumbPreviewEl.src = '';
   thumbNameEl.textContent = 'No image selected';
 }
-function moveItem(fromIndex, toIndex) {
-  if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0 || fromIndex >= items.length || toIndex >= items.length) return;
+function moveItem(fromIndex, insertIndex) {
+  if (fromIndex < 0 || fromIndex >= items.length) return false;
+  const boundedIndex = Math.max(0, Math.min(insertIndex, items.length));
+  if (fromIndex === boundedIndex || fromIndex + 1 === boundedIndex) return false;
   const updated = [...items];
   const [moved] = updated.splice(fromIndex, 1);
-  updated.splice(toIndex, 0, moved);
+  const normalizedIndex = fromIndex < boundedIndex ? boundedIndex - 1 : boundedIndex;
+  updated.splice(normalizedIndex, 0, moved);
   items = updated;
+  return true;
+}
+
+function getInsertIndexFromClientY(clientY) {
+  const cards = [...draftListEl.querySelectorAll('.draft-item[data-id]')];
+  if (!cards.length) return 0;
+  for (let i = 0; i < cards.length; i++) {
+    const rect = cards[i].getBoundingClientRect();
+    if (clientY < rect.top + rect.height / 2) return i;
+  }
+  return cards.length;
+}
+
+function clearDropTargets() {
+  draftListEl.querySelectorAll('.draft-item').forEach(el => el.classList.remove('dragging', 'drop-target'));
+}
+
+function applyDropTarget(insertIndex, activeId) {
+  clearDropTargets();
+  const cards = [...draftListEl.querySelectorAll('.draft-item[data-id]')];
+  if (!cards.length) return;
+  const activeCard = activeId ? draftListEl.querySelector(`.draft-item[data-id="${activeId}"]`) : null;
+  activeCard?.classList.add('dragging');
+  if (insertIndex >= cards.length) {
+    cards[cards.length - 1]?.classList.add('drop-target');
+    return;
+  }
+  cards[insertIndex]?.classList.add('drop-target');
+}
+
+const dragState = {
+  html5Id: null,
+  insertIndex: null,
+  touchId: null,
+  touchPointerId: null
+};
+
+function finishDragReorder(changed) {
+  dragState.html5Id = null;
+  dragState.insertIndex = null;
+  clearDropTargets();
+  if (changed) {
+    save();
+    renderDraftList();
+    renderShareBoard();
+    setStatus('Order updated.');
+  } else {
+    renderDraftList();
+  }
 }
 
 function attachDragSorting() {
-  let draggedId = null;
   const cards = [...draftListEl.querySelectorAll('.draft-item[data-id]')];
   cards.forEach(card => {
     const handle = card.querySelector('.drag-handle');
     if (!handle) return;
     handle.addEventListener('dragstart', (e) => {
-      draggedId = card.dataset.id;
+      dragState.html5Id = card.dataset.id;
+      dragState.insertIndex = items.findIndex(item => item.id === dragState.html5Id);
       card.classList.add('dragging');
       if (e.dataTransfer) {
         e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', draggedId);
+        e.dataTransfer.setData('text/plain', dragState.html5Id);
       }
     });
     handle.addEventListener('dragend', () => {
-      draggedId = null;
-      draftListEl.querySelectorAll('.draft-item').forEach(el => el.classList.remove('dragging', 'drop-target'));
+      dragState.html5Id = null;
+      dragState.insertIndex = null;
+      clearDropTargets();
     });
   });
 
-  cards.forEach(card => {
-    card.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      if (!draggedId || draggedId === card.dataset.id) return;
-      draftListEl.querySelectorAll('.draft-item').forEach(el => el.classList.remove('drop-target'));
-      card.classList.add('drop-target');
-      if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
-    });
-    card.addEventListener('dragleave', () => {
-      card.classList.remove('drop-target');
-    });
-    card.addEventListener('drop', (e) => {
-      e.preventDefault();
-      const sourceId = draggedId || (e.dataTransfer ? e.dataTransfer.getData('text/plain') : '');
-      const targetId = card.dataset.id;
-      card.classList.remove('drop-target');
-      if (!sourceId || sourceId === targetId) return;
-      const fromIndex = items.findIndex(item => item.id === sourceId);
-      const toIndex = items.findIndex(item => item.id === targetId);
-      moveItem(fromIndex, toIndex);
-      save();
-      renderDraftList();
-      renderShareBoard();
-      setStatus('Order updated.');
-    });
+  if (draftListEl.dataset.dragBound === '1') return;
+  draftListEl.dataset.dragBound = '1';
+
+  draftListEl.addEventListener('dragover', (e) => {
+    if (!dragState.html5Id) return;
+    e.preventDefault();
+    dragState.insertIndex = getInsertIndexFromClientY(e.clientY);
+    applyDropTarget(dragState.insertIndex, dragState.html5Id);
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+  });
+
+  draftListEl.addEventListener('drop', (e) => {
+    if (!dragState.html5Id) return;
+    e.preventDefault();
+    const fromIndex = items.findIndex(item => item.id === dragState.html5Id);
+    const insertIndex = dragState.insertIndex ?? getInsertIndexFromClientY(e.clientY);
+    const changed = moveItem(fromIndex, insertIndex);
+    finishDragReorder(changed);
+  });
+
+  draftListEl.addEventListener('dragleave', (e) => {
+    const relatedTarget = e.relatedTarget;
+    if (!relatedTarget || !draftListEl.contains(relatedTarget)) {
+      clearDropTargets();
+    }
   });
 }
 
@@ -645,75 +708,111 @@ async function drawShareCanvas() {
 
 function attachTouchSorting() {
   const handles = [...draftListEl.querySelectorAll('.drag-handle')];
-  let activeId = null;
-  let activeCard = null;
-  let lastSwapId = null;
-
   handles.forEach(handle => {
     handle.addEventListener('pointerdown', (e) => {
-      if (e.pointerType === 'mouse' && e.button !== 0) return;
-      activeCard = handle.closest('.draft-item');
+      if (e.pointerType === 'mouse') return;
+      const activeCard = handle.closest('.draft-item');
       if (!activeCard) return;
-      activeId = activeCard.dataset.id;
-      lastSwapId = null;
+      dragState.touchId = activeCard.dataset.id;
+      dragState.touchPointerId = e.pointerId;
+      dragState.insertIndex = items.findIndex(item => item.id === dragState.touchId);
       activeCard.classList.add('dragging');
-      handle.setPointerCapture?.(e.pointerId);
+      document.body.style.userSelect = 'none';
       e.preventDefault();
     });
+  });
 
-    handle.addEventListener('pointermove', (e) => {
-      if (!activeId || !activeCard) return;
-      const el = document.elementFromPoint(e.clientX, e.clientY);
-      const targetCard = el?.closest?.('.draft-item');
-      if (!targetCard || targetCard.dataset.id === activeId || targetCard.dataset.id === lastSwapId) return;
-      const fromIndex = items.findIndex(item => item.id === activeId);
-      const toIndex = items.findIndex(item => item.id === targetCard.dataset.id);
-      if (fromIndex === -1 || toIndex === -1) return;
-      moveItem(fromIndex, toIndex);
-      lastSwapId = targetCard.dataset.id;
+  if (window.__lambdaTouchSortBound) return;
+  window.__lambdaTouchSortBound = true;
+
+  const onMove = (e) => {
+    if (dragState.touchPointerId !== e.pointerId || !dragState.touchId) return;
+    e.preventDefault();
+    const insertIndex = getInsertIndexFromClientY(e.clientY);
+    dragState.insertIndex = insertIndex;
+    applyDropTarget(insertIndex, dragState.touchId);
+    const fromIndex = items.findIndex(item => item.id === dragState.touchId);
+    const changed = moveItem(fromIndex, insertIndex);
+    if (changed) {
       renderDraftList();
       renderShareBoard();
-      activeCard = draftListEl.querySelector(`.draft-item[data-id="${activeId}"]`);
-      activeCard?.classList.add('dragging');
-    });
+      applyDropTarget(insertIndex, dragState.touchId);
+    }
+  };
 
-    const finish = () => {
-      if (!activeId) return;
+  const finish = (e) => {
+    if (dragState.touchPointerId === null) return;
+    if (e && e.pointerId != null && e.pointerId !== dragState.touchPointerId) return;
+    const hadActive = Boolean(dragState.touchId);
+    dragState.touchId = null;
+    dragState.touchPointerId = null;
+    dragState.insertIndex = null;
+    document.body.style.userSelect = '';
+    clearDropTargets();
+    if (hadActive) {
       save();
       renderDraftList();
       renderShareBoard();
       setStatus('Order updated.');
-      activeId = null;
-      activeCard = null;
-      lastSwapId = null;
-    };
+    }
+  };
 
-    handle.addEventListener('pointerup', finish);
-    handle.addEventListener('pointercancel', finish);
-  });
+  window.addEventListener('pointermove', onMove, { passive: false });
+  window.addEventListener('pointerup', finish);
+  window.addEventListener('pointercancel', finish);
+}
+
+function makeExportFilename() {
+  const raw = (listTitleEl.value.trim() || 'lambda-picks')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 64);
+  return `${raw || 'lambda-picks'}.png`;
+}
+
+async function saveBlobToDevice(blob, filename) {
+  if ('showSaveFilePicker' in window) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [{
+          description: 'PNG image',
+          accept: { 'image/png': ['.png'] }
+        }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      return true;
+    } catch (err) {
+      if (err && err.name === 'AbortError') return false;
+    }
+  }
+
+  const url = URL.createObjectURL(blob);
+  try {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    return true;
+  } finally {
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
 }
 
 shareBtn.addEventListener('click', async () => {
   if (!items.length) return setStatus('Add at least one item first.');
-  setStatus('Exporting image...');
+  setStatus('Preparing PNG...');
   const canvas = await drawShareCanvas();
   canvas.toBlob(async (blob) => {
     if (!blob) return setStatus('Export failed.');
-    const file = new File([blob], 'lambda-picks.png', {type:'image/png'});
-    if (navigator.canShare && navigator.canShare({files:[file]})) {
-      try {
-        await navigator.share({files:[file], title:'Lambda Picks'});
-        setStatus('Shared.');
-        return;
-      } catch (e) {}
-    }
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'lambda-picks.png';
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 500);
-    setStatus('PNG downloaded.');
+    const saved = await saveBlobToDevice(blob, makeExportFilename());
+    setStatus(saved ? 'PNG saved to your device.' : 'Save cancelled.');
   }, 'image/png');
 });
 
